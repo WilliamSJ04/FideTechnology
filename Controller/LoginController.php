@@ -3,6 +3,11 @@
 
     if(session_status() == PHP_SESSION_NONE){
         session_start();
+        
+    if ($_SESSION['usuario']['rol'] !== 'admin') {
+        header('Location: ?controlador=Login&accion=accesoDenegado');
+        exit;
+}
     }
 
     if(isset($_POST["btnIniciarSesion"]))
