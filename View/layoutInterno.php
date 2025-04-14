@@ -5,7 +5,6 @@
         session_start();
     }
 
-
     function PrintCss()
     {
         echo '<head>
@@ -31,7 +30,6 @@
         </head>';   
     }
     
-
     function PrintNavBar()
     {
         $usuario = VerificarSesion();
@@ -70,7 +68,7 @@
                                 </div>
                                 <div class="header-info-right">
                                    <ul>                                          
-                                       <li><a href="login.html">Mi cuenta </a></li>
+                                       <li><a href="?controlador=Login&accion=mostrarMiCuenta">Mi Cuenta</a></li>
                                        <li><a href="product_list.html">Lista de Deseos</a></li>
                                        <li><a href="cart.html">Carrito</a></li>
                                        <li><a href="checkout.html">Checkout</a></li>
@@ -157,9 +155,9 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                                      aria-labelledby="userDropdown">
-                                                    <a class="dropdown-item" href="#">
+                                                    <a class="dropdown-item" href="?controlador=Login&accion=mostrarMiCuenta">
                                                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400 AlineacionOpciones"></i>
-                                                        Perfil
+                                                        Mi Cuenta
                                                     </a>
                                                     <a class="dropdown-item" href="#">
                                                         <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400 AlineacionOpciones"></i>
@@ -292,5 +290,4 @@
        </div>
    </footer>';
     }
-
 ?>
