@@ -19,6 +19,13 @@
             $_SESSION["NombreUsuario"] = $datos["NombreUsuario"];
             $_SESSION["NombrePerfil"] = $datos["NombrePerfil"];
             $_SESSION["IdPerfil"] = $datos["IdPerfil"];
+            $_SESSION["usuario"] = [
+                'id' => $datos["Id"],
+                'nombre' => $datos["NombreUsuario"],
+                'correo' => $datos["Correo"],
+                'direccion' => $datos["Direccion"] ?? '',
+                'telefono' => $datos["Telefono"] ?? ''
+            ];
 
             if($recordar) {
                 setcookie("correo_recordado", $correo, time() + (86400 * 30), "/"); // 86400 = 1 día
@@ -54,6 +61,13 @@
             $_SESSION["NombreUsuario"] = $datos["NombreUsuario"];
             $_SESSION["NombrePerfil"] = $datos["NombrePerfil"];
             $_SESSION["IdPerfil"] = $datos["IdPerfil"];
+            $_SESSION["usuario"] = [
+                'id' => $datos["Id"],
+                'nombre' => $datos["NombreUsuario"],
+                'correo' => $datos["Correo"],
+                'direccion' => $datos["Direccion"] ?? '',
+                'telefono' => $datos["Telefono"] ?? ''
+            ];
 
             header('location: ../../View/Home/home.php');
         }
@@ -70,35 +84,34 @@
     }
 
     function VerificarSesion()
-{
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
 
-    if (isset($_SESSION["NombreUsuario"])) {
-        return $_SESSION["NombreUsuario"];
-    } else {
-        return null;
+        if (isset($_SESSION["NombreUsuario"])) {
+            return $_SESSION["NombreUsuario"];
+        } else {
+            return null;
+        }
     }
-}
 
     if (isset($_GET["token"])) {
-    $token = $_GET["token"];
+        $token = $_GET["token"];
 
-    $usuario = ValidarTokenModel($token); 
-    if ($datos = mysqli_fetch_array($usuario)) {
-        $idUsuario = $datos["Id"];
+        $usuario = ValidarTokenModel($token); 
+        if ($datos = mysqli_fetch_array($usuario)) {
+            $idUsuario = $datos["Id"];
 
-        if (ActivarCuentaModel($idUsuario)) {
-            $_POST["Message"] = "Cuenta activada con éxito. Ahora puedes iniciar sesión.";
+            if (ActivarCuentaModel($idUsuario)) {
+                $_POST["Message"] = "Cuenta activada con éxito. Ahora puedes iniciar sesión.";
+            } else {
+                $_POST["Message"] = "Hubo un error al activar tu cuenta.";
+            }
         } else {
-            $_POST["Message"] = "Hubo un error al activar tu cuenta.";
+            $_POST["Message"] =  "No se proporcionó un token válido.";
         }
-    } else {
-        $_POST["Message"] =  "No se proporcionó un token válido.";
     }
-        }
-
 
     function GenerarTokenCorreo() {
         return bin2hex(random_bytes(32));
@@ -108,7 +121,6 @@
         return bin2hex(random_bytes(3));
     }
 
-    
     if(isset($_POST["btnRecuperarContrasenna"]))
     {
         $correo = $_POST["txtCorreo"];
@@ -203,6 +215,63 @@
             echo "Error inesperado: " . $e->getMessage();
         }
     }
+
+    // Mostrar información de la cuenta del usuario
+    function mostrarMiCuenta() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['usuario'])) {
+            header('location: ../../View/Login/login.php');
+            exit();
+        }
+
+        $resultado = obtenerUsuarioPorId($_SESSION['usuario']['id']);
+        if($resultado != null && $resultado->num_rows > 0) {
+            $datos = mysqli_fetch_array($resultado);
+            $_SESSION['usuario'] = [
+                'id' => $datos["Id"],
+                'nombre' => $datos["NombreUsuario"],
+                'correo' => $datos["Correo"],
+                'direccion' => $datos["Direccion"] ?? '',
+                'telefono' => $datos["Telefono"] ?? ''
+            ];
+        }
+        include_once $_SERVER["DOCUMENT_ROOT"] . "/FideTechnology/View/Login/miCuenta.php";
+    }
+
+    // Actualizar información de la cuenta del usuario
+    function actualizarMiCuenta() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['usuario'])) {
+            header('location: ../../View/Login/login.php');
+            exit();
+        }
+
+        $id = $_SESSION['usuario']['id'];
+        $nombre = $_POST['nombre'];
+        $direccion = $_POST['direccion'] ?? '';
+        $telefono = $_POST['telefono'] ?? '';
+
+        $resultado = actualizarUsuario($id, $nombre, $direccion, $telefono);
+
+        if ($resultado) {
+            // Actualizar los datos en la sesión
+            $_SESSION['usuario']['nombre'] = $nombre;
+            $_SESSION['usuario']['direccion'] = $direccion;
+            $_SESSION['usuario']['telefono'] = $telefono;
+            
+            $_SESSION['mensaje_exito'] = "Tus datos se han actualizado correctamente.";
+        } else {
+            $_SESSION['mensaje_error'] = "Hubo un error al actualizar tus datos.";
+        }
+
+        header('Location: ../../View/Login/miCuenta.php');
+    }
     
     function EnviarCorreo($asunto, $contenido, $destinatario) {
         require 'PHPMailer/src/PHPMailer.php';
@@ -233,6 +302,4 @@
             return false;
         }
     }
-    
-    
 ?>
