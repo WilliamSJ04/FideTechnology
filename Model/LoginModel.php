@@ -74,52 +74,82 @@
     }
 
     function GuardarTokenActivacionModel($idUsuario, $token)
-{
-    try
     {
-        $context = AbrirBaseDatos();
-        $sentencia = "CALL SP_GuardarTokenActivacion('$idUsuario', '$token')";
-        $resultado = $context -> query($sentencia);
-        CerrarBaseDatos($context);
-        return $resultado;
+        try
+        {
+            $context = AbrirBaseDatos();
+            $sentencia = "CALL SP_GuardarTokenActivacion('$idUsuario', '$token')";
+            $resultado = $context -> query($sentencia);
+            CerrarBaseDatos($context);
+            return $resultado;
+        }
+        catch(Exception $error)
+        {
+            return null;
+        }
     }
-    catch(Exception $error)
-    {
-        return null;
-    }
-}
 
+    function ValidarTokenModel($token)
+    {
+        try
+        {
+            $context = AbrirBaseDatos();
+            $sentencia = "CALL SP_ValidarToken('$token')";
+            $resultado = $context -> query($sentencia);
+            CerrarBaseDatos($context);
+            return $resultado;
+        }
+        catch(Exception $error)
+        {
+            return null;
+        }
+    }
 
-function ValidarTokenModel($token)
-{
-    try
+    function ActivarCuentaModel($idUsuario)
     {
-        $context = AbrirBaseDatos();
-        $sentencia = "CALL SP_ValidarToken('$token')";
-        $resultado = $context -> query($sentencia);
-        CerrarBaseDatos($context);
-        return $resultado;
+        try
+        {
+            $context = AbrirBaseDatos();
+            $sentencia = "CALL SP_ActivarCuenta('$idUsuario')";
+            $resultado = $context -> query($sentencia);
+            CerrarBaseDatos($context);
+            return $resultado;
+        }
+        catch(Exception $error)
+        {
+            return null;
+        }
     }
-    catch(Exception $error)
-    {
-        return null;
-    }
-}
 
-function ActivarCuentaModel($idUsuario)
-{
-    try
+    function obtenerUsuarioPorId($id)
     {
-        $context = AbrirBaseDatos();
-        $sentencia = "CALL SP_ActivarCuenta('$idUsuario')";
-        $resultado = $context -> query($sentencia);
-        CerrarBaseDatos($context);
-        return $resultado;
+        try
+        {
+            $context = AbrirBaseDatos();
+            $sentencia = "CALL SP_ObtenerUsuarioPorId('$id')";
+            $resultado = $context -> query($sentencia);
+            CerrarBaseDatos($context);
+            return $resultado;
+        }
+        catch(Exception $error)
+        {
+            return null;
+        }
     }
-    catch(Exception $error)
-    {
-        return null;
-    }
-}
 
+    function actualizarUsuario($id, $nombre, $direccion, $telefono)
+    {
+        try
+        {
+            $context = AbrirBaseDatos();
+            $sentencia = "CALL SP_ActualizarUsuario('$id', '$nombre', '$direccion', '$telefono')";
+            $resultado = $context -> query($sentencia);
+            CerrarBaseDatos($context);
+            return $resultado;
+        }
+        catch(Exception $error)
+        {
+            return false;
+        }
+    }
 ?>
